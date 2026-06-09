@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Form Input Produksi - Dengan Catatan Defect & Breakdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f0f4f8; font-family: 'Inter', sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #1e3c72, #2b4c7c); color: white; padding: 24px; border-radius: 28px; margin-bottom: 24px; text-align: center; }
+        .header h1 { font-size: 1.5rem; margin-bottom: 8px; }
+        .form-card { background: white; border-radius: 28px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #1e3a5f; }
+        .required::after { content: " *"; color: #ef4444; }
+        input, select, textarea { width: 100%; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 16px; font-size: 0.9rem; font-family: 'Inter', sans-serif; }
+        textarea { resize: vertical; min-height: 70px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #2c7cb6; box-shadow: 0 0 0 3px rgba(44,124,182,0.1); }
+        .row-2cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .btn-submit { background: #2c7cb6; color: white; border: none; width: 100%; padding: 16px; border-radius: 40px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+        .success-message { background: #10b981; color: white; padding: 14px; border-radius: 16px; margin-top: 16px; text-align: center; display: none; }
+        .error-message { background: #ef4444; color: white; padding: 14px; border-radius: 16px; margin-top: 16px; text-align: center; display: none; }
+        .info-note { background: #eef2fa; padding: 12px; border-radius: 16px; font-size: 0.7rem; color: #5b6e8c; text-align: center; margin-top: 20px; }
+        .quick-buttons { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .quick-btn { background: #eef2fa; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
+        .quick-btn:hover { background: #dce6f5; }
+        hr { margin: 16px 0; border: none; border-top: 1px solid #eef2f8; }
+        .section-title { font-weight: 700; margin: 16px 0 8px 0; color: #1e3a5f; display: flex; align-items: center; gap: 8px; }
+        .badge-info { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 12px; font-size: 0.65rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-clipboard-list"></i> Input Produksi Harian</h1>
+        <p>Update data dari line produksi + catatan defect & breakdown</p>
+    </div>
+
+    <div class="form-card">
+        <form id="productionForm">
+            <!-- Line & Target -->
+            <div class="form-group">
+                <label class="required">📋 Pilih Line Produksi</label>
+                <select id="line" required>
+                    <option value="">-- Pilih Line --</option>
+                    <option value="Thin Line 1">Thin Line 1</option>
+                    <option value="Thin Line 2">Thin Line 2</option>
+                    <option value="Thin Line 3">Thin Line 3</option>
+                    <option value="Dust Workshop">Dust Workshop</option>
+                    <option value="Assembly Unit">Assembly Unit</option>
+                </select>
+            </div>
+
+            <div class="row-2cols">
+                <div class="form-group">
+                    <label class="required">🎯 Target Produksi</label>
+                    <input type="number" id="target" placeholder="Contoh: 25000" required>
+                </div>
+                <div class="form-group">
+                    <label class="required">✅ Actual Produksi</label>
+                    <input type="number" id="actual" placeholder="Contoh: 23500" required>
+                </div>
+            </div>
+
+            <div class="row-2cols">
+                <div class="form-group">
+                    <label>⚠️ Reject (%)</label>
+                    <input type="number" id="reject" step="0.1" placeholder="0-100" value="0">
+                    <div class="quick-buttons">
+                        <button type="button" class="quick-btn" data-val="1">1%</button>
+                        <button type="button" class="quick-btn" data-val="2">2%</button>
+                        <button type="button" class="quick-btn" data-val="3">3%</button>
+                        <button type="button" class="quick-btn" data-val="5">5%</button>
+                        <button type="button" class="quick-btn" data-val="10">10%</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>⏸️ Downtime (%)</label>
+                    <input type="number" id="downtime" step="0.1" placeholder="0-100" value="0">
+                    <div class="quick-buttons">
+                        <button type="button" class="quick-btn" data-downtime="2">2%</button>
+                        <button type="button" class="quick-btn" data-downtime="5">5%</button>
+                        <button type="button" class="quick-btn" data-downtime="8">8%</button>
+                        <button type="button" class="quick-btn" data-downtime="12">12%</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row-2cols">
+                <div class="form-group">
+                    <label>💧 Air (m³)</label>
+                    <input type="number" id="air" placeholder="Konsumsi air" value="0">
+                </div>
+                <div class="form-group">
+                    <label>⚡ Listrik (MWh)</label>
+                    <input type="number" id="electric" placeholder="Konsumsi listrik" value="0">
+                </div>
+            </div>
+
+            <div class="row-2cols">
+                <div class="form-group">
+                    <label>🔥 Steam (GJ)</label>
+                    <input type="number" id="steam" placeholder="Konsumsi steam" value="0">
+                </div>
+                <div class="form-group">
+                    <label>🏭 Boiler Load (%)</label>
+                    <input type="number" id="boiler" step="1" placeholder="0-100" value="75">
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="section-title">
+                <i class="fas fa-bug" style="color:#dc2626"></i> DESKRIPSI DEFECT / CACAT PRODUK
+                <span class="badge-info">Wajib diisi jika reject >0</span>
+            </div>
+            <div class="form-group">
+                <textarea id="defectDesc" placeholder="Contoh: Cacat surface pada produk X, terjadi pada shift pagi, mesin extruder error..."></textarea>
+                <div class="quick-buttons">
+                    <button type="button" class="quick-btn" data-defect="Cacat dimensi (terlalu kecil/terlalu besar)">📏 Cacat dimensi</button>
+                    <button type="button" class="quick-btn" data-defect="Cacat surface / goresan memanjang">🔍 Cacat surface</button>
+                    <button type="button" class="quick-btn" data-defect="Material tidak sesuai spec / rapuh">🧪 Material NG</button>
+                    <button type="button" class="quick-btn" data-defect="Warna tidak sesuai standard">🎨 Warna NG</button>
+                    <button type="button" class="quick-btn" data-defect="Porositas / berlubang">🕳️ Porositas</button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <i class="fas fa-tools" style="color:#f97316"></i> DESKRIPSI BREAKDOWN / MESIN BERHENTI
+                <span class="badge-info">Wajib diisi jika downtime >0</span>
+            </div>
+            <div class="form-group">
+                <textarea id="breakdownDesc" placeholder="Contoh: Mesin injection moulding mati selama 45 menit, penyebab heater rusak..."></textarea>
+                <div class="quick-buttons">
+                    <button type="button" class="quick-btn" data-breakdown="Mesin extruder overheat, mati">🔥 Extruder overheat</button>
+                    <button type="button" class="quick-btn" data-breakdown="Conveyor belt putus / slip">⚙️ Conveyor rusak</button>
+                    <button type="button" class="quick-btn" data-breakdown="Kompresor angin mati, tekanan turun">💨 Kompresor mati</button>
+                    <button type="button" class="quick-btn" data-breakdown="PLC error, sistem restart">💻 PLC error</button>
+                    <button type="button" class="quick-btn" data-breakdown="Motor listrik terbakar / mati">🔌 Motor rusak</button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <i class="fas fa-hammer" style="color:#10b981"></i> TINDAKAN PERBAIKAN (Corrective Action)
+            </div>
+            <div class="form-group">
+                <textarea id="correctiveAction" placeholder="Contoh: Ganti heater, kalibrasi ulang, bersihkan nozzle..."></textarea>
+                <div class="quick-buttons">
+                    <button type="button" class="quick-btn" data-action="Ganti spare part mesin">🔩 Ganti spare part</button>
+                    <button type="button" class="quick-btn" data-action="Kalibrasi ulang mesin / sensor">📐 Kalibrasi</button>
+                    <button type="button" class="quick-btn" data-action="Bersihkan & maintenance rutin">🧹 Maintenance</button>
+                    <button type="button" class="quick-btn" data-action="Adjust setting parameter produksi">⚙️ Adjust setting</button>
+                    <button type="button" class="quick-btn" data-action="Training operator / QC">📚 Training</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>👤 Nama Operator / PIC</label>
+                <input type="text" id="operator" placeholder="Nama Anda">
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <i class="fas fa-paper-plane"></i> Kirim ke Database
+            </button>
+
+            <div id="successMsg" class="success-message">
+                <i class="fas fa-check-circle"></i> Data berhasil dikirim! AI akan menganalisis.
+            </div>
+            <div id="errorMsg" class="error-message">
+                <i class="fas fa-exclamation-triangle"></i> Gagal mengirim data.
+            </div>
+        </form>
+    </div>
+
+    <div class="info-note">
+        <i class="fas fa-info-circle"></i> Catatan defect & breakdown akan dianalisis oleh AI untuk memberikan rekomendasi perbaikan.
+        <br>Data akan langsung terlihat di dashboard setelah submit.
+    </div>
+</div>
+
+<script>
+    // ============ KONFIGURASI ============
+    // Ganti dengan Web App URL dari Google Apps Script setelah deploy
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/oauthcallback?state=ACjPJvFebFGNpFFalTedoXshZxjIaMHc6C0KpASmUBcCtXZoXVvKwAiMYzQGbG-MdynOc4llxoPp9ICXElmauAR7QdMLDUNgoOi88tcjx1mR_Ax3j0zSgY79R9T7QprMYfiwY-QRyR0ZwA56hCwsshoGvDA1I4Ng1FIkXdeuaTjWzp8&iss=https://accounts.google.com&scope=https://www.googleapis.com/auth/spreadsheets%20https://www.googleapis.com/auth/script.external_request&authuser=0&prompt=consent&version_info=CmxfU1ZJX0VLT1drZWFELVpRREdCQWlQMDFCUlVSSVpsOXhiR1l0YTFsSVZWUXROMjVzUkZsM1VsSmthMmQ0YWxGcU5VTTVYM0ZmVkZBNE1ERnJNRWRoUkhKc01WQlJVa2t3YkVKUVVHcGZad18";
+    // =====================================
+
+    // Quick buttons untuk reject
+    document.querySelectorAll('.quick-btn[data-val]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('reject').value = btn.dataset.val;
+        });
+    });
+
+    // Quick buttons untuk downtime
+    document.querySelectorAll('.quick-btn[data-downtime]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('downtime').value = btn.dataset.downtime;
+        });
+    });
+
+    // Quick buttons untuk defect description
+    document.querySelectorAll('.quick-btn[data-defect]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const textarea = document.getElementById('defectDesc');
+            const current = textarea.value;
+            const newText = current ? current + "\n• " + btn.dataset.defect : "• " + btn.dataset.defect;
+            textarea.value = newText;
+        });
+    });
+
+    // Quick buttons untuk breakdown description
+    document.querySelectorAll('.quick-btn[data-breakdown]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const textarea = document.getElementById('breakdownDesc');
+            const current = textarea.value;
+            const newText = current ? current + "\n• " + btn.dataset.breakdown : "• " + btn.dataset.breakdown;
+            textarea.value = newText;
+        });
+    });
+
+    // Quick buttons untuk corrective action
+    document.querySelectorAll('.quick-btn[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const textarea = document.getElementById('correctiveAction');
+            const current = textarea.value;
+            const newText = current ? current + "\n• " + btn.dataset.action : "• " + btn.dataset.action;
+            textarea.value = newText;
+        });
+    });
+
+    const form = document.getElementById('productionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMsg = document.getElementById('successMsg');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const line = document.getElementById('line').value;
+        const target = document.getElementById('target').value;
+        const actual = document.getElementById('actual').value;
+        const reject = parseFloat(document.getElementById('reject').value) || 0;
+        const downtime = parseFloat(document.getElementById('downtime').value) || 0;
+        
+        if (!line || !target || !actual) {
+            alert('Harap isi Line, Target, dan Actual Produksi');
+            return;
+        }
+
+        // Validasi: jika reject >0 wajib isi deskripsi defect
+        if (reject > 0) {
+            const defectDesc = document.getElementById('defectDesc').value.trim();
+            if (!defectDesc || defectDesc === "") {
+                alert('⚠️ Reject rate > 0%, harap isi deskripsi defect terlebih dahulu!');
+                document.getElementById('defectDesc').focus();
+                return;
+            }
+        }
+
+        // Validasi: jika downtime >0 wajib isi deskripsi breakdown
+        if (downtime > 0) {
+            const breakdownDesc = document.getElementById('breakdownDesc').value.trim();
+            if (!breakdownDesc || breakdownDesc === "") {
+                alert('⚠️ Downtime > 0%, harap isi deskripsi breakdown terlebih dahulu!');
+                document.getElementById('breakdownDesc').focus();
+                return;
+            }
+        }
+
+        const data = {
+            timestamp: new Date().toISOString(),
+            line: line,
+            target: parseInt(target),
+            actual: parseInt(actual),
+            reject: reject,
+            downtime: downtime,
+            air: parseInt(document.getElementById('air').value) || 0,
+            electric: parseInt(document.getElementById('electric').value) || 0,
+            steam: parseInt(document.getElementById('steam').value) || 0,
+            boiler: parseInt(document.getElementById('boiler').value) || 75,
+            defectDesc: document.getElementById('defectDesc').value || "-",
+            breakdownDesc: document.getElementById('breakdownDesc').value || "-",
+            correctiveAction: document.getElementById('correctiveAction').value || "-",
+            operator: document.getElementById('operator').value || 'Unknown',
+            achievement: ((parseInt(actual) / parseInt(target)) * 100).toFixed(1)
+        };
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Mengirim...';
+
+        try {
+            // Kirim ke Google Apps Script
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            successMsg.style.display = 'block';
+            errorMsg.style.display = 'none';
+            
+            // Reset form
+            form.reset();
+            document.getElementById('reject').value = '0';
+            document.getElementById('downtime').value = '0';
+            document.getElementById('boiler').value = '75';
+            document.getElementById('defectDesc').value = '';
+            document.getElementById('breakdownDesc').value = '';
+            document.getElementById('correctiveAction').value = '';
+            
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            errorMsg.style.display = 'block';
+            setTimeout(() => {
+                errorMsg.style.display = 'none';
+            }, 3000);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim ke Database';
+        }
+    });
+</script>
+</body>
+</html>
