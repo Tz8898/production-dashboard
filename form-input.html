@@ -62,7 +62,7 @@
                 </select>
             </div>
 
-            <!-- ========== BARIS 2: NAMA PRODUK (KOLOM BARU) ========== -->
+            <!-- ========== BARIS 2: NAMA PRODUK ========== -->
             <div class="form-group">
                 <label class="required">📦 Nama Produk / Kode Produk</label>
                 <input type="text" id="productName" placeholder="Contoh: ZPP-047 / Thin Film A / Komponen X" required>
@@ -115,7 +115,7 @@
                 </div>
             </div>
 
-            <!-- ========== BARIS 5: KONSUMSI ENERGI ========== -->
+            <!-- ========== BARIS 5: KONSUMSI ENERGI (TANPA BOILER) ========== -->
             <div class="row-2cols">
                 <div class="form-group">
                     <label>💧 Air (m³)</label>
@@ -127,15 +127,9 @@
                 </div>
             </div>
 
-            <div class="row-2cols">
-                <div class="form-group">
-                    <label>🔥 Steam (GJ)</label>
-                    <input type="number" id="steam" placeholder="Konsumsi steam" value="0">
-                </div>
-                <div class="form-group">
-                    <label>🏭 Boiler Load (%)</label>
-                    <input type="number" id="boiler" step="1" placeholder="0-100" value="75">
-                </div>
+            <div class="form-group">
+                <label>🔥 Steam (GJ)</label>
+                <input type="number" id="steam" placeholder="Konsumsi steam" value="0">
             </div>
 
             <hr>
@@ -217,7 +211,7 @@
 <script>
     // ============ KONFIGURASI ============
     // Ganti dengan Web App URL dari Google Apps Script setelah deploy
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/oauthcallback?state=ACjPJvFebFGNpFFalTedoXshZxjIaMHc6C0KpASmUBcCtXZoXVvKwAiMYzQGbG-MdynOc4llxoPp9ICXElmauAR7QdMLDUNgoOi88tcjx1mR_Ax3j0zSgY79R9T7QprMYfiwY-QRyR0ZwA56hCwsshoGvDA1I4Ng1FIkXdeuaTjWzp8&iss=https://accounts.google.com&scope=https://www.googleapis.com/auth/spreadsheets%20https://www.googleapis.com/auth/script.external_request&authuser=0&prompt=consent&version_info=CmxfU1ZJX0VLT1drZWFELVpRREdCQWlQMDFCUlVSSVpsOXhiR1l0YTFsSVZWUXROMjVzUkZsM1VsSmthMmQ0YWxGcU5VTTVYM0ZmVkZBNE1ERnJNRWRoUkhKc01WQlJVa2t3YkVKUVVHcGZad18";
     // =====================================
 
     // Quick buttons untuk reject
@@ -338,7 +332,7 @@
         const data = {
             timestamp: new Date().toISOString(),
             line: line,
-            productName: productName,  // KOLOM BARU: Nama Produk
+            productName: productName,
             target: parseInt(target),
             actual: parseInt(actual),
             reject: reject,
@@ -372,7 +366,6 @@
             form.reset();
             document.getElementById('reject').value = '0';
             document.getElementById('downtime').value = '0';
-            document.getElementById('boiler').value = '75';
             document.getElementById('defectDesc').value = '';
             document.getElementById('breakdownDesc').value = '';
             document.getElementById('correctiveAction').value = '';
