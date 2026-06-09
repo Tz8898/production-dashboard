@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Production Dashboard | AI Analyst | With Product Name</title>
+    <title>Production Dashboard | Google Sheets Connected</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -11,551 +11,272 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f0f4f8; font-family: 'Inter', sans-serif; padding: 20px; }
         .dashboard { max-width: 1600px; margin: 0 auto; }
-        
-        /* Header */
         .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 24px; gap: 16px; }
         h1 { font-size: 1.6rem; background: linear-gradient(135deg, #1e3c72, #2b4c7c); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .status-badge { background: #10b981; color: white; padding: 8px 16px; border-radius: 40px; font-size: 0.75rem; }
         .status-badge.offline { background: #ef4444; }
         .btn-refresh { background: #2c7cb6; border: none; padding: 8px 20px; border-radius: 40px; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .btn-refresh:hover { background: #1e5a7c; }
         .last-update { font-size: 0.7rem; color: #6c86a3; }
-        
-        /* KPI Cards */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; margin-bottom: 28px; }
-        .kpi-card { background: white; border-radius: 24px; padding: 16px; border-left: 4px solid; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-        .kpi-value { font-size: 1.6rem; font-weight: 800; color: #1e3a5f; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 28px; }
+        .kpi-card { background: white; border-radius: 24px; padding: 16px; border-left: 4px solid; }
+        .kpi-value { font-size: 1.5rem; font-weight: 800; color: #1e3a5f; }
         .kpi-sub { font-size: 0.7rem; color: #6c86a3; margin-top: 6px; }
-        
-        /* Charts */
         .charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px; margin-bottom: 28px; }
         .chart-card { background: white; border-radius: 24px; padding: 20px; }
         canvas { max-height: 260px; width: 100%; }
-        
-        /* Two Columns */
         .two-columns { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 28px; }
         .defect-table { flex: 1.5; background: white; border-radius: 24px; padding: 20px; overflow-x: auto; }
         .ai-analysis { flex: 1; background: linear-gradient(145deg, #1e2f3f, #16212e); border-radius: 24px; padding: 20px; color: white; }
-        
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #eef2f8; vertical-align: top; }
-        th { background: #f8fafc; font-weight: 700; color: #1e3a5f; position: sticky; top: 0; }
-        .badge-defect { background: #fee2e2; color: #dc2626; padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
-        .badge-breakdown { background: #ffedd5; color: #f97316; padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
-        .badge-product { background: #dbeafe; color: #1e40af; padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
-        
-        /* AI Messages */
-        .ai-message { background: #2a3e50; border-radius: 16px; padding: 14px; margin: 12px 0; font-size: 0.8rem; border-left: 3px solid #f97316; line-height: 1.5; }
-        
-        /* Footer */
-        .footer { text-align: center; padding: 16px; font-size: 0.7rem; color: #6c86a3; border-top: 1px solid #e2e8f0; margin-top: 20px; }
-        
-        /* Filter Section */
+        table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+        th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid #eef2f8; }
+        th { background: #f8fafc; font-weight: 700; }
+        .badge-defect { background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 20px; font-size: 0.65rem; display: inline-block; }
+        .badge-breakdown { background: #ffedd5; color: #f97316; padding: 2px 6px; border-radius: 20px; font-size: 0.65rem; display: inline-block; }
+        .badge-product { background: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 20px; font-size: 0.65rem; display: inline-block; }
+        .badge-weight { background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 20px; font-size: 0.65rem; display: inline-block; }
+        .ai-message { background: #2a3e50; border-radius: 16px; padding: 14px; margin: 12px 0; font-size: 0.75rem; border-left: 3px solid #f97316; }
         .filter-bar { background: white; border-radius: 20px; padding: 12px 20px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
         .filter-group { display: flex; align-items: center; gap: 10px; }
-        .filter-group label { font-size: 0.75rem; font-weight: 600; color: #1e3a5f; }
-        .filter-group select, .filter-group input { padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 0.75rem; }
-        
-        @media (max-width: 768px) { body { padding: 12px; } .kpi-value { font-size: 1.3rem; } }
-        
-        .text-truncate { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .product-filter { min-width: 180px; }
+        .filter-group select, .filter-group input { padding: 6px 12px; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 0.7rem; }
+        .btn-export { background: #10b981; border: none; padding: 6px 16px; border-radius: 20px; color: white; cursor: pointer; font-size: 0.7rem; }
+        .footer { text-align: center; padding: 16px; font-size: 0.7rem; color: #6c86a3; border-top: 1px solid #e2e8f0; margin-top: 20px; }
+        @media (max-width: 768px) { body { padding: 12px; } .kpi-value { font-size: 1.2rem; } }
     </style>
 </head>
 <body>
 <div class="dashboard">
-    <!-- Header -->
     <div class="header">
         <div>
-            <h1><i class="fas fa-chart-line"></i> Production Dashboard & AI Analyst</h1>
-            <p style="font-size:0.7rem; color:#6c86a3; margin-top:4px;">Real-time monitoring | Analisis defect & breakdown per produk</p>
+            <h1><i class="fas fa-chart-line"></i> Production Dashboard</h1>
+            <p style="font-size:0.7rem;">Real-time dari Google Sheets | Analisis defect & breakdown</p>
         </div>
-        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; gap: 12px; align-items: center;">
             <div class="last-update" id="lastUpdate">⏳ Menunggu data...</div>
             <button class="btn-refresh" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
-            <div class="status-badge" id="statusBadge"><i class="fas fa-circle"></i> Live</div>
+            <button class="btn-export" id="exportBtn"><i class="fas fa-download"></i> Export CSV</button>
+            <div class="status-badge" id="statusBadge"><i class="fas fa-circle"></i> Google Sheets</div>
         </div>
     </div>
 
-    <!-- Filter Bar -->
     <div class="filter-bar">
-        <div class="filter-group">
-            <i class="fas fa-filter"></i>
-            <label>Filter Line:</label>
-            <select id="filterLine">
-                <option value="all">Semua Line</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <i class="fas fa-box"></i>
-            <label>Filter Produk:</label>
-            <select id="filterProduct" class="product-filter">
-                <option value="all">Semua Produk</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <i class="fas fa-calendar"></i>
-            <label>Periode:</label>
-            <input type="date" id="filterDateStart">
-            <span>s/d</span>
-            <input type="date" id="filterDateEnd">
-        </div>
-        <button class="btn-refresh" id="applyFilterBtn" style="background:#eef2fa; color:#1e3a5f; padding:6px 16px;"><i class="fas fa-check"></i> Terapkan</button>
+        <div class="filter-group"><i class="fas fa-filter"></i><label>Line:</label><select id="filterLine"><option value="all">Semua Line</option></select></div>
+        <div class="filter-group"><i class="fas fa-box"></i><label>Produk:</label><select id="filterProduct"><option value="all">Semua Produk</option></select></div>
+        <div class="filter-group"><i class="fas fa-calendar"></i><label>Periode:</label><input type="date" id="filterDateStart"><span>s/d</span><input type="date" id="filterDateEnd"></div>
+        <button class="btn-refresh" id="applyFilterBtn" style="background:#eef2fa; color:#1e3a5f;"><i class="fas fa-check"></i> Terapkan</button>
     </div>
 
-    <!-- KPI Cards -->
     <div class="kpi-grid" id="kpiContainer">Loading...</div>
 
-    <!-- Charts -->
     <div class="charts-row">
-        <div class="chart-card">
-            <div class="chart-title" style="font-weight:700; margin-bottom:16px;"><i class="fas fa-chart-simple"></i> Target vs Actual Production</div>
-            <canvas id="targetChart"></canvas>
-        </div>
-        <div class="chart-card">
-            <div class="chart-title" style="font-weight:700; margin-bottom:16px;"><i class="fas fa-chart-line"></i> OEE & Reject Trend</div>
-            <canvas id="oeeChart"></canvas>
-        </div>
+        <div class="chart-card"><div style="font-weight:700; margin-bottom:16px;">📊 Target vs Actual</div><canvas id="targetChart"></canvas></div>
+        <div class="chart-card"><div style="font-weight:700; margin-bottom:16px;">📈 OEE & Reject Trend</div><canvas id="oeeChart"></canvas></div>
     </div>
 
-    <!-- Two Columns: Table + AI -->
     <div class="two-columns">
         <div class="defect-table">
-            <h4 style="margin-bottom:16px; display:flex; align-items:center; gap:8px;">
-                <i class="fas fa-clipboard-list"></i> Histori Defect & Breakdown (20 terbaru)
-                <span style="font-size:0.65rem; background:#eef2fa; padding:2px 8px; border-radius:20px;">dengan Nama Produk</span>
-            </h4>
+            <h4 style="margin-bottom:16px;"><i class="fas fa-clipboard-list"></i> Histori Defect & Breakdown (20 terbaru)</h4>
             <div style="overflow-x: auto;">
                 <table id="defectTable">
-                    <thead>
-                        <tr>
-                            <th>Waktu</th>
-                            <th>Line</th>
-                            <th>Produk</th>
-                            <th>Reject%</th>
-                            <th>Downtime%</th>
-                            <th>Deskripsi Defect</th>
-                            <th>Deskripsi Breakdown</th>
-                            <th>Tindakan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="defectTableBody">
-                        <tr><td colspan="8" style="text-align:center">Memuat data......</td></tr>
-                    </tbody>
+                    <thead><tr><th>Tgl</th><th>Jam</th><th>Line</th><th>Produk</th><th>Berat</th><th>Target</th><th>Actual</th><th>Reject%</th><th>Downtime%</th><th>Defect</th><th>Breakdown</th><th>Tindakan</th></tr></thead>
+                    <tbody id="defectTableBody"><tr><td colspan="12">Memuat data...</td></tr></tbody>
                 </table>
             </div>
         </div>
         <div class="ai-analysis">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; border-bottom:1px solid #3a4e62; padding-bottom:12px;">
                 <i class="fas fa-robot" style="font-size:2rem; color:#60a5fa;"></i>
-                <div>
-                    <strong>AI Analyst - Rekomendasi Solusi</strong><br>
-                    <span style="font-size:0.65rem;">Analisis berbasis data defect & breakdown per produk</span>
-                </div>
+                <div><strong>AI Analyst</strong><br><span style="font-size:0.65rem;">Rekomendasi solusi</span></div>
             </div>
-            <div id="aiMessages">
-                <div class="ai-message">🔍 Menganalisis data produksi...</div>
-            </div>
-            <div style="margin-top: 16px; font-size:0.65rem; border-top:1px solid #3a4e62; padding-top:12px;">
-                <i class="fas fa-lightbulb"></i> AI mendeteksi pola defect & memberikan rekomendasi preventif
-            </div>
+            <div id="aiMessages"><div class="ai-message">🔍 Menganalisis data...</div></div>
         </div>
     </div>
-
-    <div class="footer">
-        <i class="fas fa-database"></i> Data tersimpan di Google Sheets | Update real-time setiap 30 detik
-    </div>
+    <div class="footer"><i class="fas fa-database"></i> Data dari Google Sheets | Auto refresh setiap 30 detik</div>
 </div>
 
 <script>
-    // ============ KONFIGURASI ============
-    // Ganti dengan URL Google Apps Script Anda setelah deploy
-    const API_URL = "https://script.google.com/oauthcallback?state=ACjPJvFebFGNpFFalTedoXshZxjIaMHc6C0KpASmUBcCtXZoXVvKwAiMYzQGbG-MdynOc4llxoPp9ICXElmauAR7QdMLDUNgoOi88tcjx1mR_Ax3j0zSgY79R9T7QprMYfiwY-QRyR0ZwA56hCwsshoGvDA1I4Ng1FIkXdeuaTjWzp8&iss=https://accounts.google.com&scope=https://www.googleapis.com/auth/spreadsheets%20https://www.googleapis.com/auth/script.external_request&authuser=0&prompt=consent&version_info=CmxfU1ZJX0VLT1drZWFELVpRREdCQWlQMDFCUlVSSVpsOXhiR1l0YTFsSVZWUXROMjVzUkZsM1VsSmthMmQ0YWxGcU5VTTVYM0ZmVkZBNE1ERnJNRWRoUkhKc01WQlJVa2t3YkVKUVVHcGZad18";
-    // =====================================
+    // ============ GANTI DENGAN URL APPS SCRIPT ANDA ============
+    const API_URL = "https://script.google.com/oauthcallback?state=ACjPJvFebFGNpFFalTedoXshZxjIaMHc6C0KpASmUBcCtXZoXVvKwAiMYzQGbG-MdynOc4llxoPp9ICXElmauAR7QdMLDUNgoOi88tcjx1mR_Ax3j0zSgY79R9T7QprMYfiwY-QRyR0ZwA56hCwsshoGvDA1I4Ng1FIkXdeuaTjWzp8&iss=https://accounts.google.com&scope=https://www.googleapis.com/auth/spreadsheets%20https://www.googleapis.com/auth/script.external_request&authuser=0&prompt=consent&version_info=CmxfU1ZJX0VLT1drZWFELVpRREdCQWlQMDFCUlVSSVpsOXhiR1l0YTFsSVZWUXROMjVzUkZsM1VsSmthMmQ0YWxGcU5VTTVYM0ZmVkZBNE1ERnJNRWRoUkhKc01WQlJVa2t3YkVKUVVHcGZad18
+";
+    // ============================================================
 
-    let charts = {};
-    let allRecords = [];
-    let filteredRecords = [];
+    let charts = {}, allRecords = [], filteredRecords = [];
 
-    // Helper: Hitung OEE
     function calculateOEE(actual, target, reject, downtime) {
-        let achievement = (actual / target) * 100;
+        if (!target) return 0;
+        let ach = (actual / target) * 100;
         let quality = Math.max(0, 100 - (reject || 0));
-        let availability = Math.max(0, 100 - (downtime || 0));
-        let oee = (achievement / 100) * (quality / 100) * (availability / 100) * 100;
-        return Math.min(100, Math.max(0, oee)).toFixed(1);
+        let avail = Math.max(0, 100 - (downtime || 0));
+        return Math.min(100, Math.max(0, (ach/100)*(quality/100)*(avail/100)*100)).toFixed(1);
     }
 
-    // Fetch data dari Google Sheets
     async function fetchData() {
         try {
-            document.getElementById('statusBadge').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Fetching...';
+            document.getElementById('statusBadge').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
             const response = await fetch(API_URL);
             const data = await response.json();
-            
             if (data && data.length > 0) {
                 processRawData(data);
                 document.getElementById('lastUpdate').innerHTML = `🕐 Update: ${new Date().toLocaleTimeString('id-ID')}`;
                 document.getElementById('statusBadge').innerHTML = '<i class="fas fa-check-circle"></i> Connected';
                 document.getElementById('statusBadge').classList.remove('offline');
-            } else {
-                throw new Error("Data kosong");
-            }
+            } else { throw new Error("Data kosong"); }
         } catch (err) {
-            console.error("Fetch error:", err);
             document.getElementById('statusBadge').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Offline';
             document.getElementById('statusBadge').classList.add('offline');
             loadSampleData();
         }
     }
 
-    // Proses data mentah dari API
     function processRawData(rawData) {
         allRecords = [];
         rawData.forEach(row => {
-            if (!row || row.length < 14) return;
-            
-            // Struktur Google Sheets: Timestamp, Line, ProductName, Target, Actual, Reject%, Downtime%, Air, Electric, Steam, DefectDesc, BreakdownDesc, CorrectiveAction, InputBy
-            const record = {
-                timestamp: row[0],
-                line: row[1] || "Unknown",
-                productName: row[2] || "-",
-                target: parseFloat(row[3]) || 0,
-                actual: parseFloat(row[4]) || 0,
-                reject: parseFloat(row[5]) || 0,
-                downtime: parseFloat(row[6]) || 0,
-                air: parseFloat(row[7]) || 0,
-                electric: parseFloat(row[8]) || 0,
-                steam: parseFloat(row[9]) || 0,
-                defectDesc: row[10] || "-",
-                breakdownDesc: row[11] || "-",
-                correctiveAction: row[12] || "-",
-                operator: row[13] || "-"
-            };
-            
-            if (record.target > 0 && record.line !== "Unknown") {
-                allRecords.push(record);
-            }
+            if (!row || row.length < 18) return;
+            allRecords.push({
+                id: row[0], timestamp: row[0], date: row[1], time: row[2],
+                line: row[3] || "Unknown", productName: row[4] || "-", productWeight: parseFloat(row[5]) || 0,
+                target: parseFloat(row[6]) || 0, actual: parseFloat(row[7]) || 0,
+                reject: parseFloat(row[8]) || 0, downtime: parseFloat(row[9]) || 0,
+                air: parseFloat(row[10]) || 0, electric: parseFloat(row[11]) || 0, steam: parseFloat(row[12]) || 0,
+                defectDesc: row[13] || "-", breakdownDesc: row[14] || "-",
+                correctiveAction: row[15] || "-", operator: row[16] || "-", achievement: row[17] || 0
+            });
         });
-        
-        if (allRecords.length === 0) {
-            loadSampleData();
-            return;
-        }
-        
+        if (allRecords.length === 0) { loadSampleData(); return; }
         updateFilterOptions();
         applyFilters();
     }
 
-    // Update dropdown filter berdasarkan data yang ada
     function updateFilterOptions() {
         const lines = [...new Set(allRecords.map(r => r.line))];
         const products = [...new Set(allRecords.map(r => r.productName).filter(p => p && p !== "-"))];
-        
-        const lineSelect = document.getElementById('filterLine');
-        const productSelect = document.getElementById('filterProduct');
-        
-        lineSelect.innerHTML = '<option value="all">Semua Line</option>' + 
-            lines.map(l => `<option value="${l}">${l}</option>`).join('');
-        
-        productSelect.innerHTML = '<option value="all">Semua Produk</option>' + 
-            products.map(p => `<option value="${p}">${p}</option>`).join('');
+        document.getElementById('filterLine').innerHTML = '<option value="all">Semua Line</option>' + lines.map(l => `<option value="${l}">${l}</option>`).join('');
+        document.getElementById('filterProduct').innerHTML = '<option value="all">Semua Produk</option>' + products.map(p => `<option value="${p}">${p}</option>`).join('');
     }
 
-    // Terapkan filter berdasarkan pilihan user
     function applyFilters() {
         const selectedLine = document.getElementById('filterLine').value;
         const selectedProduct = document.getElementById('filterProduct').value;
         const startDate = document.getElementById('filterDateStart').value;
         const endDate = document.getElementById('filterDateEnd').value;
         
-        filteredRecords = allRecords.filter(record => {
-            if (selectedLine !== 'all' && record.line !== selectedLine) return false;
-            if (selectedProduct !== 'all' && record.productName !== selectedProduct) return false;
-            
-            if (startDate) {
-                const recordDate = new Date(record.timestamp).toISOString().split('T')[0];
-                if (recordDate < startDate) return false;
-            }
-            if (endDate) {
-                const recordDate = new Date(record.timestamp).toISOString().split('T')[0];
-                if (recordDate > endDate) return false;
-            }
+        filteredRecords = allRecords.filter(r => {
+            if (selectedLine !== 'all' && r.line !== selectedLine) return false;
+            if (selectedProduct !== 'all' && r.productName !== selectedProduct) return false;
+            if (startDate && r.date && r.date < startDate) return false;
+            if (endDate && r.date && r.date > endDate) return false;
             return true;
         });
         
         if (filteredRecords.length === 0) {
-            document.getElementById('kpiContainer').innerHTML = '<div class="kpi-card">Tidak ada data sesuai filter</div>';
-            document.getElementById('defectTableBody').innerHTML = '<tr><td colspan="8">Tidak ada data sesuai filter</td></tr>';
+            document.getElementById('kpiContainer').innerHTML = '<div class="kpi-card">Tidak ada data</div>';
+            document.getElementById('defectTableBody').innerHTML = '<tr><td colspan="12">Tidak ada data</td></tr>';
             return;
         }
         
-        // Ambil data terbaru per line untuk chart
         const latestPerLine = {};
-        filteredRecords.forEach(record => {
-            if (!latestPerLine[record.line] || new Date(record.timestamp) > new Date(latestPerLine[record.line].timestamp)) {
-                latestPerLine[record.line] = record;
-            }
-        });
-        const latestData = Object.values(latestPerLine);
-        
-        updateDashboard(latestData);
+        filteredRecords.forEach(r => { if (!latestPerLine[r.line] || new Date(r.timestamp) > new Date(latestPerLine[r.line].timestamp)) latestPerLine[r.line] = r; });
+        updateDashboard(Object.values(latestPerLine));
         updateDefectTable(filteredRecords.slice(-20).reverse());
         analyzeWithAI(filteredRecords.slice(-50));
     }
 
-    // Update KPI dan Chart
     function updateDashboard(data) {
         const totalTarget = data.reduce((s, d) => s + d.target, 0);
         const totalActual = data.reduce((s, d) => s + d.actual, 0);
-        const avgReject = (data.reduce((s, d) => s + (d.reject || 0), 0) / data.length).toFixed(1);
+        const avgReject = (data.reduce((s, d) => s + d.reject, 0) / data.length).toFixed(1);
         const avgOEE = (data.reduce((a, b) => a + parseFloat(calculateOEE(b.actual, b.target, b.reject, b.downtime)), 0) / data.length).toFixed(1);
         const totalDefect = data.filter(d => d.defectDesc && d.defectDesc !== "-").length;
         const totalBreakdown = data.filter(d => d.breakdownDesc && d.breakdownDesc !== "-").length;
-        const achievement = ((totalActual / totalTarget) * 100).toFixed(1);
-        
-        const uniqueProducts = [...new Set(data.map(d => d.productName).filter(p => p && p !== "-"))].length;
+        const uniqueProducts = [...new Set(data.map(d => d.productName))].length;
+        const totalWeight = data.reduce((s, d) => s + (d.productWeight || 0), 0).toFixed(2);
+        const achievement = totalTarget > 0 ? ((totalActual / totalTarget) * 100).toFixed(1) : 0;
         
         document.getElementById('kpiContainer').innerHTML = `
-            <div class="kpi-card" style="border-left-color:#2c7cb6">
-                <div class="kpi-title">🎯 Total Target</div>
-                <div class="kpi-value">${totalTarget.toLocaleString()}</div>
-            </div>
-            <div class="kpi-card" style="border-left-color:#10b981">
-                <div class="kpi-title">✅ Total Actual</div>
-                <div class="kpi-value">${totalActual.toLocaleString()}</div>
-                <div class="kpi-sub">Achievement: ${achievement}%</div>
-            </div>
-            <div class="kpi-card" style="border-left-color:#ef4444">
-                <div class="kpi-title">⚠️ Rata-rata Reject</div>
-                <div class="kpi-value">${avgReject}%</div>
-            </div>
-            <div class="kpi-card" style="border-left-color:#8b5cf6">
-                <div class="kpi-title">📊 Rata-rata OEE</div>
-                <div class="kpi-value">${avgOEE}%</div>
-            </div>
-            <div class="kpi-card" style="border-left-color:#f97316">
-                <div class="kpi-title">🐞 Defect Events</div>
-                <div class="kpi-value">${totalDefect}</div>
-            </div>
-            <div class="kpi-card" style="border-left-color:#dc2626">
-                <div class="kpi-title">🔧 Breakdown Events</div>
-                <div class="kpi-value">${totalBreakdown}</div>
-            </div>
-            <div class="kpi-card" style="border-left-color:#06b6d4">
-                <div class="kpi-title">📦 Produk Aktif</div>
-                <div class="kpi-value">${uniqueProducts}</div>
-            </div>
+            <div class="kpi-card" style="border-left-color:#2c7cb6"><div class="kpi-title">🎯 Total Target</div><div class="kpi-value">${totalTarget.toLocaleString()}</div></div>
+            <div class="kpi-card" style="border-left-color:#10b981"><div class="kpi-title">✅ Total Actual</div><div class="kpi-value">${totalActual.toLocaleString()}</div><div class="kpi-sub">Ach: ${achievement}%</div></div>
+            <div class="kpi-card" style="border-left-color:#ef4444"><div class="kpi-title">⚠️ Reject</div><div class="kpi-value">${avgReject}%</div></div>
+            <div class="kpi-card" style="border-left-color:#8b5cf6"><div class="kpi-title">📊 OEE</div><div class="kpi-value">${avgOEE}%</div></div>
+            <div class="kpi-card" style="border-left-color:#f97316"><div class="kpi-title">🐞 Defect</div><div class="kpi-value">${totalDefect}</div></div>
+            <div class="kpi-card" style="border-left-color:#dc2626"><div class="kpi-title">🔧 Breakdown</div><div class="kpi-value">${totalBreakdown}</div></div>
+            <div class="kpi-card" style="border-left-color:#06b6d4"><div class="kpi-title">📦 Produk</div><div class="kpi-value">${uniqueProducts}</div></div>
+            <div class="kpi-card" style="border-left-color:#8b5cf6"><div class="kpi-title">⚖️ Total Berat</div><div class="kpi-value">${totalWeight} kg</div></div>
         `;
 
-        // Bar Chart Target vs Actual
         if (charts.target) charts.target.destroy();
         charts.target = new Chart(document.getElementById('targetChart'), {
-            type: 'bar',
-            data: {
-                labels: data.map(d => d.line.length > 12 ? d.line.substring(0,10)+'..' : d.line),
-                datasets: [
-                    { label: 'Target', data: data.map(d => d.target), backgroundColor: '#94a3b8', borderRadius: 8 },
-                    { label: 'Actual', data: data.map(d => d.actual), backgroundColor: '#2c7cb6', borderRadius: 8 }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, title: { display: true, text: 'Produksi (unit)' } } } }
+            type: 'bar', data: { labels: data.map(d => d.line.length > 12 ? d.line.substring(0,10)+'..' : d.line), datasets: [
+                { label: 'Target', data: data.map(d => d.target), backgroundColor: '#94a3b8' },
+                { label: 'Actual', data: data.map(d => d.actual), backgroundColor: '#2c7cb6' }
+            ]}, options: { responsive: true }
         });
-
-        // Line Chart OEE & Reject
         if (charts.oee) charts.oee.destroy();
         charts.oee = new Chart(document.getElementById('oeeChart'), {
-            type: 'line',
-            data: {
-                labels: data.map(d => d.line.length > 12 ? d.line.substring(0,10)+'..' : d.line),
-                datasets: [
-                    { label: 'OEE (%)', data: data.map(d => calculateOEE(d.actual, d.target, d.reject, d.downtime)), borderColor: '#8b5cf6', tension: 0.2, fill: false, pointBackgroundColor: '#8b5cf6', pointRadius: 4 },
-                    { label: 'Reject (%)', data: data.map(d => d.reject), borderColor: '#ef4444', tension: 0.2, fill: false, pointBackgroundColor: '#ef4444', pointRadius: 4 }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: 'Persentase (%)' } } } }
+            type: 'line', data: { labels: data.map(d => d.line.length > 12 ? d.line.substring(0,10)+'..' : d.line), datasets: [
+                { label: 'OEE (%)', data: data.map(d => calculateOEE(d.actual, d.target, d.reject, d.downtime)), borderColor: '#8b5cf6', tension: 0.2 },
+                { label: 'Reject (%)', data: data.map(d => d.reject), borderColor: '#ef4444', tension: 0.2 }
+            ]}, options: { responsive: true }
         });
     }
 
-    // Update Tabel Defect dengan kolom Produk
     function updateDefectTable(records) {
         const tbody = document.getElementById('defectTableBody');
-        if (records.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center">Belum ada data defect</td></tr>';
-            return;
-        }
-        
+        if (records.length === 0) { tbody.innerHTML = '<tr><td colspan="12">Belum ada data</td></tr>'; return; }
         tbody.innerHTML = '';
-        records.forEach(rec => {
-            const timeFormatted = rec.timestamp ? new Date(rec.timestamp).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'}) : '-';
-            const defectShort = rec.defectDesc && rec.defectDesc !== "-" ? 
-                (rec.defectDesc.length > 40 ? rec.defectDesc.substring(0, 40) + '...' : rec.defectDesc) : '-';
-            const breakdownShort = rec.breakdownDesc && rec.breakdownDesc !== "-" ? 
-                (rec.breakdownDesc.length > 40 ? rec.breakdownDesc.substring(0, 40) + '...' : rec.breakdownDesc) : '-';
-            const actionShort = rec.correctiveAction && rec.correctiveAction !== "-" ?
-                (rec.correctiveAction.length > 35 ? rec.correctiveAction.substring(0, 35) + '...' : rec.correctiveAction) : '-';
-            const productShort = rec.productName && rec.productName !== "-" ?
-                (rec.productName.length > 20 ? rec.productName.substring(0, 18) + '..' : rec.productName) : '-';
-            
-            tbody.innerHTML += `
-                <tr>
-                    <td style="white-space:nowrap">${timeFormatted}</td>
-                    <td><strong>${rec.line}</strong></td>
-                    <td><span class="badge-product">${productShort}</span></td>
-                    <td><span class="badge-defect">${rec.reject}%</span></td>
-                    <td><span class="badge-breakdown">${rec.downtime}%</span></td>
-                    <td class="text-truncate" title="${(rec.defectDesc || '').replace(/"/g, '&quot;')}">${defectShort}</td>
-                    <td class="text-truncate" title="${(rec.breakdownDesc || '').replace(/"/g, '&quot;')}">${breakdownShort}</td>
-                    <td class="text-truncate" title="${(rec.correctiveAction || '').replace(/"/g, '&quot;')}">${actionShort}</td>
-                </tr>
-            `;
+        records.forEach(r => {
+            tbody.innerHTML += `<tr>
+                <td>${r.date || '-'}</td><td>${r.time || '-'}</td><td><strong>${r.line}</strong></td>
+                <td><span class="badge-product">${(r.productName || '-').substring(0,15)}</span></td>
+                <td><span class="badge-weight">${(r.productWeight || 0).toFixed(2)}</span></td>
+                <td>${(r.target || 0).toLocaleString()}</td><td>${(r.actual || 0).toLocaleString()}</td>
+                <td><span class="badge-defect">${r.reject || 0}%</span></td>
+                <td><span class="badge-breakdown">${r.downtime || 0}%</span></td>
+                <td title="${(r.defectDesc || '').replace(/"/g, '&quot;')}">${(r.defectDesc || '-').substring(0,25)}</td>
+                <td title="${(r.breakdownDesc || '').replace(/"/g, '&quot;')}">${(r.breakdownDesc || '-').substring(0,25)}</td>
+                <td>${(r.correctiveAction || '-').substring(0,20)}</td>
+            </tr>`;
         });
     }
 
-    // AI Analisis dengan mempertimbangkan Nama Produk
     function analyzeWithAI(records) {
-        if (records.length === 0) {
-            document.getElementById('aiMessages').innerHTML = '<div class="ai-message">📊 Belum cukup data untuk analisis. Input data produksi terlebih dahulu.</div>';
-            return;
-        }
-
-        const defectKeywords = ['cacat', 'surface', 'goresan', 'dimensi', 'material', 'warna', 'extruder', 'rapuh', 'scratch', 'porositas', 'bubble'];
-        const breakdownKeywords = ['mati', 'overheat', 'conveyor', 'kompresor', 'plc', 'motor', 'heater', 'error', 'rusak', 'berhenti'];
-        
-        let defectCount = {};
-        let breakdownCount = {};
-        let productReject = {};
-        let lineReject = {};
-        
-        records.forEach(rec => {
-            if (rec.defectDesc && rec.defectDesc !== "-") {
-                defectKeywords.forEach(keyword => {
-                    if (rec.defectDesc.toLowerCase().includes(keyword)) {
-                        defectCount[keyword] = (defectCount[keyword] || 0) + 1;
-                    }
-                });
-            }
-            if (rec.breakdownDesc && rec.breakdownDesc !== "-") {
-                breakdownKeywords.forEach(keyword => {
-                    if (rec.breakdownDesc.toLowerCase().includes(keyword)) {
-                        breakdownCount[keyword] = (breakdownCount[keyword] || 0) + 1;
-                    }
-                });
-            }
-            if (rec.productName && rec.productName !== "-" && rec.reject > 0) {
-                if (!productReject[rec.productName]) productReject[rec.productName] = { total: 0, count: 0 };
-                productReject[rec.productName].total += rec.reject;
-                productReject[rec.productName].count++;
-            }
-            if (rec.line && rec.reject > 0) {
-                lineReject[rec.line] = (lineReject[rec.line] || 0) + rec.reject;
-            }
+        if (records.length === 0) { document.getElementById('aiMessages').innerHTML = '<div class="ai-message">Belum cukup data</div>'; return; }
+        const defectKeywords = ['cacat', 'surface', 'goresan', 'dimensi', 'material'];
+        const breakdownKeywords = ['mati', 'overheat', 'conveyor', 'kompresor', 'motor'];
+        let defectCount = {}, breakdownCount = {}, productReject = {};
+        records.forEach(r => {
+            if (r.defectDesc && r.defectDesc !== "-") defectKeywords.forEach(k => { if (r.defectDesc.toLowerCase().includes(k)) defectCount[k] = (defectCount[k]||0)+1; });
+            if (r.breakdownDesc && r.breakdownDesc !== "-") breakdownKeywords.forEach(k => { if (r.breakdownDesc.toLowerCase().includes(k)) breakdownCount[k] = (breakdownCount[k]||0)+1; });
+            if (r.productName && r.reject > 0) { if (!productReject[r.productName]) productReject[r.productName] = { total: 0, count: 0 }; productReject[r.productName].total += r.reject; productReject[r.productName].count++; }
         });
-        
-        const topDefect = Object.entries(defectCount).sort((a,b) => b[1] - a[1])[0];
-        const topBreakdown = Object.entries(breakdownCount).sort((a,b) => b[1] - a[1])[0];
-        
-        let worstProduct = null;
-        let worstProductReject = 0;
-        for (let prod in productReject) {
-            let avg = productReject[prod].total / productReject[prod].count;
-            if (avg > worstProductReject) {
-                worstProductReject = avg;
-                worstProduct = prod;
-            }
-        }
-        
-        let worstLine = null;
-        let worstLineReject = 0;
-        for (let line in lineReject) {
-            if (lineReject[line] > worstLineReject) {
-                worstLineReject = lineReject[line];
-                worstLine = line;
-            }
-        }
-        
-        const totalRejectRate = records.reduce((a,b) => a + (b.reject || 0), 0) / records.length;
-        const estimatedLoss = (totalRejectRate * 500000).toLocaleString();
-        
-        let recommendations = [];
-        
-        if (topDefect && topDefect[1] >= 2) {
-            let solution = "";
-            if (topDefect[0].includes('surface') || topDefect[0].includes('goresan')) {
-                solution = "Cek roller mesin, bersihkan secara rutin, kalibrasi tekanan extruder.";
-            } else if (topDefect[0].includes('dimensi')) {
-                solution = "Kalibrasi ulang setting mesin, cek mold/cetakan.";
-            } else if (topDefect[0].includes('material')) {
-                solution = "Audit kualitas material dari supplier, lakukan incoming inspection.";
-            } else if (topDefect[0].includes('porositas') || topDefect[0].includes('bubble')) {
-                solution = "Cek suhu dan tekanan proses, pastikan material kering.";
-            } else {
-                solution = "Lakukan root cause analysis dan quality control gate.";
-            }
-            recommendations.push(`🔍 *Defect terbanyak: "${topDefect[0]}"* (${topDefect[1]}x)<br>📌 Rekomendasi: ${solution}`);
-        }
-        
-        if (topBreakdown && topBreakdown[1] >= 2) {
-            let solution = "";
-            if (topBreakdown[0].includes('overheat') || topBreakdown[0].includes('heater')) {
-                solution = "Schedule preventive maintenance setiap 500 jam, siapkan spare part heater.";
-            } else if (topBreakdown[0].includes('conveyor') || topBreakdown[0].includes('belt')) {
-                solution = "Cek tension belt, lubrikasi rutin, siapkan spare part belt.";
-            } else if (topBreakdown[0].includes('kompresor')) {
-                solution = "Schedule maintenance kompresor, ganti filter udara.";
-            } else if (topBreakdown[0].includes('motor')) {
-                solution = "Cek kapasitas beban listrik, lakukan thermal imaging.";
-            } else {
-                solution = "Lakukan preventive maintenance terjadwal.";
-            }
-            recommendations.push(`⚠️ *Breakdown terbanyak: "${topBreakdown[0]}"* (${topBreakdown[1]}x)<br>📌 Rekomendasi: ${solution}`);
-        }
-        
-        if (worstProduct && worstProductReject > 5) {
-            recommendations.push(`📦 *Produk reject tertinggi: ${worstProduct}* (${worstProductReject.toFixed(1)}%)<br>📌 Rekomendasi: Audit proses produksi untuk produk ini.`);
-        }
-        
-        if (worstLine && worstLineReject > 10) {
-            recommendations.push(`🏭 *Line reject tertinggi: ${worstLine}*<br>📌 Rekomendasi: Audit line ini, cek kalibrasi mesin.`);
-        }
-        
-        if (totalRejectRate > 5) {
-            recommendations.push(`💰 *Estimasi kerugian reject:* Rp ${estimatedLoss} / bulan<br>📌 Investasikan perbaikan kualitas.`);
-        }
-        
-        if (recommendations.length === 0) {
-            recommendations.push(`✅ *Tidak ada defect/breakdown signifikan* dalam periode terakhir.<br>📌 Pertahankan performa, lakukan continuous improvement.`);
-        }
-        
-        recommendations.push(`💡 *Tips:* Gunakan filter untuk melihat data per produk atau per line tertentu.`);
-        
-        document.getElementById('aiMessages').innerHTML = recommendations.map(rec => 
-            `<div class="ai-message"><i class="fas fa-brain"></i> ${rec}</div>`
-        ).join('');
+        const topDefect = Object.entries(defectCount).sort((a,b)=>b[1]-a[1])[0];
+        const topBreakdown = Object.entries(breakdownCount).sort((a,b)=>b[1]-a[1])[0];
+        let worstProduct = null, worstReject = 0;
+        for (let p in productReject) { let avg = productReject[p].total / productReject[p].count; if (avg > worstReject) { worstReject = avg; worstProduct = p; } }
+        let recs = [];
+        if (topDefect) recs.push(`🔍 Defect: "${topDefect[0]}" (${topDefect[1]}x) → Cek mesin & kalibrasi.`);
+        if (topBreakdown) recs.push(`⚠️ Breakdown: "${topBreakdown[0]}" (${topBreakdown[1]}x) → Preventive maintenance.`);
+        if (worstProduct) recs.push(`📦 Produk bermasalah: ${worstProduct} (reject ${worstReject.toFixed(1)}%) → Audit proses.`);
+        if (recs.length === 0) recs.push(`✅ Tidak ada masalah signifikan. Pertahankan performa!`);
+        document.getElementById('aiMessages').innerHTML = recs.map(r => `<div class="ai-message"><i class="fas fa-brain"></i> ${r}</div>`).join('');
     }
 
-    // Sample data jika offline
+    function exportToCSV() {
+        if (filteredRecords.length === 0) { alert('Tidak ada data'); return; }
+        const headers = ['Tanggal','Jam','Line','Produk','Berat(kg)','Target','Actual','Reject%','Downtime%','Defect','Breakdown','Tindakan','Operator'];
+        const rows = filteredRecords.map(r => [r.date, r.time, r.line, r.productName, r.productWeight, r.target, r.actual, r.reject, r.downtime, r.defectDesc, r.breakdownDesc, r.correctiveAction, r.operator]);
+        const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `production_${new Date().toISOString().slice(0,19)}.csv`; link.click(); URL.revokeObjectURL(link.href);
+    }
+
     function loadSampleData() {
-        const sampleData = [
-            { timestamp: new Date().toISOString(), line: "Line 1", productName: "ZPP-047 (Thin Film)", target: 25000, actual: 20992, reject: 3.2, downtime: 5.1, air:1250, electric:840, steam:1020, defectDesc:"Cacat surface goresan memanjang pada produk rolling", breakdownDesc:"Mesin extruder overheat, mati 25 menit", correctiveAction:"Ganti heater element, kalibrasi", operator:"Budi" },
-            { timestamp: new Date(Date.now() - 3600000).toISOString(), line: "Line 2", productName: "ZPP-048 (Premium)", target: 24000, actual: 21379, reject: 2.1, downtime: 3.8, air:1180, electric:800, steam:945, defectDesc:"Dimensi tidak sesuai spec, terlalu besar 2mm", breakdownDesc:"Conveyor belt slip, perlu adjustment", correctiveAction:"Bersihkan roller, atur tension", operator:"Siti" },
-            { timestamp: new Date(Date.now() - 7200000).toISOString(), line: "Line 3", productName: "ZPP-049 (Economy)", target: 18000, actual: 15570, reject: 4.5, downtime: 6.2, air:980, electric:710, steam:880, defectDesc:"Warna pudar tidak sesuai standard", breakdownDesc:"Kompresor angin mati, tekanan turun", correctiveAction:"Ganti filter udara, cek kebocoran", operator:"Ahmad" },
-            { timestamp: new Date(Date.now() - 14400000).toISOString(), line: "NF Workshop", productName: "Custom Order #C23", target: 5000, actual: 767, reject: 12.4, downtime: 18.3, air:340, electric:290, steam:310, defectDesc:"Cacat struktural, material rapuh saat diuji", breakdownDesc:"Motor listrik terbakar, keluar asap", correctiveAction:"Ganti motor, cek beban listrik", operator:"Joko" },
-            { timestamp: new Date(Date.now() - 28800000).toISOString(), line: "Liquid Workshop", productName: "Prototype Beta", target: 22000, actual: 19840, reject: 1.8, downtime: 2.9, air:950, electric:720, steam:790, defectDesc:"Minor scratch pada body produk", breakdownDesc:"PLC error, sistem restart sendiri", correctiveAction:"Update firmware PLC", operator:"Rina" }
-        ];
-        
-        allRecords = sampleData;
-        updateFilterOptions();
-        applyFilters();
-        document.getElementById('lastUpdate').innerHTML = `🕐 Sample data (${new Date().toLocaleTimeString()})`;
+        const sample = [{ date: new Date().toLocaleDateString('id-ID'), time: new Date().toLocaleTimeString('id-ID'), line: "Line 1", productName: "ZPP-047", productWeight: 2.5, target: 25000, actual: 20992, reject: 3.2, downtime: 5.1, defectDesc: "Cacat surface", breakdownDesc: "Extruder overheat", correctiveAction: "Ganti heater", operator: "Budi" }];
+        allRecords = sample;
+        updateFilterOptions(); applyFilters();
     }
 
-    // Event Listeners
     document.getElementById('refreshBtn').addEventListener('click', fetchData);
     document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);
-    
-    // Inisialisasi
+    document.getElementById('exportBtn').addEventListener('click', exportToCSV);
     fetchData();
     setInterval(fetchData, 30000);
 </script>
