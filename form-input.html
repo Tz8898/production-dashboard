@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Form Input Produksi - Dengan Catatan Defect & Breakdown</title>
+    <title>Form Input Produksi - Dengan Nama Produk</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #f0f4f8; font-family: 'Inter', sans-serif; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
+        .container { max-width: 650px; margin: 0 auto; }
         .header { background: linear-gradient(135deg, #1e3c72, #2b4c7c); color: white; padding: 24px; border-radius: 28px; margin-bottom: 24px; text-align: center; }
         .header h1 { font-size: 1.5rem; margin-bottom: 8px; }
         .form-card { background: white; border-radius: 28px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -31,6 +31,11 @@
         hr { margin: 16px 0; border: none; border-top: 1px solid #eef2f8; }
         .section-title { font-weight: 700; margin: 16px 0 8px 0; color: #1e3a5f; display: flex; align-items: center; gap: 8px; }
         .badge-info { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 12px; font-size: 0.65rem; }
+        .product-suggestions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+        .suggestion-tag { background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
+        .suggestion-tag:hover { background: #e2e8f0; }
+        .form-note { font-size: 0.7rem; color: #6c86a3; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+        .warning-text { color: #dc2626; font-size: 0.7rem; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -42,7 +47,7 @@
 
     <div class="form-card">
         <form id="productionForm">
-            <!-- Line & Target -->
+            <!-- ========== BARIS 1: LINE PRODUKSI ========== -->
             <div class="form-group">
                 <label class="required">📋 Pilih Line Produksi</label>
                 <select id="line" required>
@@ -52,9 +57,28 @@
                     <option value="Thin Line 3">Thin Line 3</option>
                     <option value="Dust Workshop">Dust Workshop</option>
                     <option value="Assembly Unit">Assembly Unit</option>
+                    <option value="Packaging Line">Packaging Line</option>
+                    <option value="Quality Control">Quality Control</option>
                 </select>
             </div>
 
+            <!-- ========== BARIS 2: NAMA PRODUK (KOLOM BARU) ========== -->
+            <div class="form-group">
+                <label class="required">📦 Nama Produk / Kode Produk</label>
+                <input type="text" id="productName" placeholder="Contoh: ZPP-047 / Thin Film A / Komponen X" required>
+                <div class="product-suggestions">
+                    <span class="suggestion-tag" data-product="ZPP-047 (Thin Film)">ZPP-047 (Thin Film)</span>
+                    <span class="suggestion-tag" data-product="ZPP-048 (Premium)">ZPP-048 (Premium)</span>
+                    <span class="suggestion-tag" data-product="ZPP-049 (Economy)">ZPP-049 (Economy)</span>
+                    <span class="suggestion-tag" data-product="Prototype Beta">Prototype Beta</span>
+                    <span class="suggestion-tag" data-product="Custom Order #C23">Custom Order #C23</span>
+                </div>
+                <div class="form-note">
+                    <i class="fas fa-info-circle"></i> Masukkan nama produk atau kode produksi yang sedang dikerjakan
+                </div>
+            </div>
+
+            <!-- ========== BARIS 3: TARGET & ACTUAL ========== -->
             <div class="row-2cols">
                 <div class="form-group">
                     <label class="required">🎯 Target Produksi</label>
@@ -66,6 +90,7 @@
                 </div>
             </div>
 
+            <!-- ========== BARIS 4: REJECT & DOWNTIME ========== -->
             <div class="row-2cols">
                 <div class="form-group">
                     <label>⚠️ Reject (%)</label>
@@ -90,6 +115,7 @@
                 </div>
             </div>
 
+            <!-- ========== BARIS 5: KONSUMSI ENERGI ========== -->
             <div class="row-2cols">
                 <div class="form-group">
                     <label>💧 Air (m³)</label>
@@ -114,9 +140,10 @@
 
             <hr>
 
+            <!-- ========== DESKRIPSI DEFECT ========== -->
             <div class="section-title">
                 <i class="fas fa-bug" style="color:#dc2626"></i> DESKRIPSI DEFECT / CACAT PRODUK
-                <span class="badge-info">Wajib diisi jika reject >0</span>
+                <span class="badge-info">Wajib diisi jika reject > 0</span>
             </div>
             <div class="form-group">
                 <textarea id="defectDesc" placeholder="Contoh: Cacat surface pada produk X, terjadi pada shift pagi, mesin extruder error..."></textarea>
@@ -126,12 +153,14 @@
                     <button type="button" class="quick-btn" data-defect="Material tidak sesuai spec / rapuh">🧪 Material NG</button>
                     <button type="button" class="quick-btn" data-defect="Warna tidak sesuai standard">🎨 Warna NG</button>
                     <button type="button" class="quick-btn" data-defect="Porositas / berlubang">🕳️ Porositas</button>
+                    <button type="button" class="quick-btn" data-defect="Bubble / gelembung pada produk">🫧 Bubble</button>
                 </div>
             </div>
 
+            <!-- ========== DESKRIPSI BREAKDOWN ========== -->
             <div class="section-title">
                 <i class="fas fa-tools" style="color:#f97316"></i> DESKRIPSI BREAKDOWN / MESIN BERHENTI
-                <span class="badge-info">Wajib diisi jika downtime >0</span>
+                <span class="badge-info">Wajib diisi jika downtime > 0</span>
             </div>
             <div class="form-group">
                 <textarea id="breakdownDesc" placeholder="Contoh: Mesin injection moulding mati selama 45 menit, penyebab heater rusak..."></textarea>
@@ -141,9 +170,11 @@
                     <button type="button" class="quick-btn" data-breakdown="Kompresor angin mati, tekanan turun">💨 Kompresor mati</button>
                     <button type="button" class="quick-btn" data-breakdown="PLC error, sistem restart">💻 PLC error</button>
                     <button type="button" class="quick-btn" data-breakdown="Motor listrik terbakar / mati">🔌 Motor rusak</button>
+                    <button type="button" class="quick-btn" data-breakdown="Sensor tidak berfungsi">📡 Sensor error</button>
                 </div>
             </div>
 
+            <!-- ========== TINDAKAN PERBAIKAN ========== -->
             <div class="section-title">
                 <i class="fas fa-hammer" style="color:#10b981"></i> TINDAKAN PERBAIKAN (Corrective Action)
             </div>
@@ -158,6 +189,7 @@
                 </div>
             </div>
 
+            <!-- ========== OPERATOR ========== -->
             <div class="form-group">
                 <label>👤 Nama Operator / PIC</label>
                 <input type="text" id="operator" placeholder="Nama Anda">
@@ -185,7 +217,7 @@
 <script>
     // ============ KONFIGURASI ============
     // Ganti dengan Web App URL dari Google Apps Script setelah deploy
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/oauthcallback?state=ACjPJvFebFGNpFFalTedoXshZxjIaMHc6C0KpASmUBcCtXZoXVvKwAiMYzQGbG-MdynOc4llxoPp9ICXElmauAR7QdMLDUNgoOi88tcjx1mR_Ax3j0zSgY79R9T7QprMYfiwY-QRyR0ZwA56hCwsshoGvDA1I4Ng1FIkXdeuaTjWzp8&iss=https://accounts.google.com&scope=https://www.googleapis.com/auth/spreadsheets%20https://www.googleapis.com/auth/script.external_request&authuser=0&prompt=consent&version_info=CmxfU1ZJX0VLT1drZWFELVpRREdCQWlQMDFCUlVSSVpsOXhiR1l0YTFsSVZWUXROMjVzUkZsM1VsSmthMmQ0YWxGcU5VTTVYM0ZmVkZBNE1ERnJNRWRoUkhKc01WQlJVa2t3YkVKUVVHcGZad18";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
     // =====================================
 
     // Quick buttons untuk reject
@@ -232,6 +264,14 @@
         });
     });
 
+    // Product suggestion tags
+    document.querySelectorAll('.suggestion-tag').forEach(tag => {
+        tag.addEventListener('click', () => {
+            const productName = tag.getAttribute('data-product');
+            document.getElementById('productName').value = productName;
+        });
+    });
+
     const form = document.getElementById('productionForm');
     const submitBtn = document.getElementById('submitBtn');
     const successMsg = document.getElementById('successMsg');
@@ -241,17 +281,38 @@
         e.preventDefault();
         
         const line = document.getElementById('line').value;
+        const productName = document.getElementById('productName').value.trim();
         const target = document.getElementById('target').value;
         const actual = document.getElementById('actual').value;
         const reject = parseFloat(document.getElementById('reject').value) || 0;
         const downtime = parseFloat(document.getElementById('downtime').value) || 0;
         
-        if (!line || !target || !actual) {
-            alert('Harap isi Line, Target, dan Actual Produksi');
+        // Validasi wajib
+        if (!line) {
+            alert('Harap pilih Line Produksi');
+            document.getElementById('line').focus();
+            return;
+        }
+        
+        if (!productName) {
+            alert('Harap isi Nama Produk / Kode Produk');
+            document.getElementById('productName').focus();
+            return;
+        }
+        
+        if (!target || target <= 0) {
+            alert('Harap isi Target Produksi yang valid');
+            document.getElementById('target').focus();
+            return;
+        }
+        
+        if (!actual || actual < 0) {
+            alert('Harap isi Actual Produksi yang valid');
+            document.getElementById('actual').focus();
             return;
         }
 
-        // Validasi: jika reject >0 wajib isi deskripsi defect
+        // Validasi: jika reject > 0 wajib isi deskripsi defect
         if (reject > 0) {
             const defectDesc = document.getElementById('defectDesc').value.trim();
             if (!defectDesc || defectDesc === "") {
@@ -261,7 +322,7 @@
             }
         }
 
-        // Validasi: jika downtime >0 wajib isi deskripsi breakdown
+        // Validasi: jika downtime > 0 wajib isi deskripsi breakdown
         if (downtime > 0) {
             const breakdownDesc = document.getElementById('breakdownDesc').value.trim();
             if (!breakdownDesc || breakdownDesc === "") {
@@ -271,9 +332,13 @@
             }
         }
 
+        // Hitung achievement
+        const achievement = ((parseInt(actual) / parseInt(target)) * 100).toFixed(1);
+
         const data = {
             timestamp: new Date().toISOString(),
             line: line,
+            productName: productName,  // KOLOM BARU: Nama Produk
             target: parseInt(target),
             actual: parseInt(actual),
             reject: reject,
@@ -281,12 +346,11 @@
             air: parseInt(document.getElementById('air').value) || 0,
             electric: parseInt(document.getElementById('electric').value) || 0,
             steam: parseInt(document.getElementById('steam').value) || 0,
-            boiler: parseInt(document.getElementById('boiler').value) || 75,
             defectDesc: document.getElementById('defectDesc').value || "-",
             breakdownDesc: document.getElementById('breakdownDesc').value || "-",
             correctiveAction: document.getElementById('correctiveAction').value || "-",
             operator: document.getElementById('operator').value || 'Unknown',
-            achievement: ((parseInt(actual) / parseInt(target)) * 100).toFixed(1)
+            achievement: achievement
         };
 
         submitBtn.disabled = true;
@@ -304,7 +368,7 @@
             successMsg.style.display = 'block';
             errorMsg.style.display = 'none';
             
-            // Reset form
+            // Reset form (kecuali beberapa field yang dipertahankan)
             form.reset();
             document.getElementById('reject').value = '0';
             document.getElementById('downtime').value = '0';
