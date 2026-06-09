@@ -1,314 +1,141 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Form Input Produksi - Google Sheets Connected</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Input Produksi</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f0f4f8; font-family: 'Inter', sans-serif; padding: 20px; }
-        .container { max-width: 650px; margin: 0 auto; }
-        .header { background: linear-gradient(135deg, #1e3c72, #2b4c7c); color: white; padding: 24px; border-radius: 28px; margin-bottom: 24px; text-align: center; }
-        .header h1 { font-size: 1.5rem; margin-bottom: 8px; }
-        .form-card { background: white; border-radius: 28px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #1e3a5f; }
-        .required::after { content: " *"; color: #ef4444; }
-        input, select, textarea { width: 100%; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 16px; font-size: 0.9rem; font-family: 'Inter', sans-serif; }
-        textarea { resize: vertical; min-height: 70px; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #2c7cb6; box-shadow: 0 0 0 3px rgba(44,124,182,0.1); }
-        .row-2cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .row-3cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-        .btn-submit { background: #2c7cb6; color: white; border: none; width: 100%; padding: 16px; border-radius: 40px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
-        .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
-        .success-message { background: #10b981; color: white; padding: 14px; border-radius: 16px; margin-top: 16px; text-align: center; display: none; }
-        .error-message { background: #ef4444; color: white; padding: 14px; border-radius: 16px; margin-top: 16px; text-align: center; display: none; }
-        .info-note { background: #eef2fa; padding: 12px; border-radius: 16px; font-size: 0.7rem; color: #5b6e8c; text-align: center; margin-top: 20px; }
-        .quick-buttons { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-        .quick-btn { background: #eef2fa; border: none; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
-        .quick-btn:hover { background: #dce6f5; }
-        hr { margin: 16px 0; border: none; border-top: 1px solid #eef2f8; }
-        .section-title { font-weight: 700; margin: 16px 0 8px 0; color: #1e3a5f; display: flex; align-items: center; gap: 8px; }
-        .badge-info { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 12px; font-size: 0.65rem; }
-        .product-suggestions, .weight-suggestions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-        .suggestion-tag, .weight-tag { background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
-        .suggestion-tag:hover, .weight-tag:hover { background: #dbeafe; }
-        .form-note { font-size: 0.7rem; color: #6c86a3; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
-        .status-connected { background: #10b981; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
-        .status-disconnected { background: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
+        body { font-family: Arial; padding: 20px; max-width: 500px; margin: 0 auto; background: #f0f2f5; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; }
+        .success { background: #28a745; color: white; padding: 10px; margin-top: 10px; display: none; border-radius: 5px; }
+        .error { background: #dc3545; color: white; padding: 10px; margin-top: 10px; display: none; border-radius: 5px; }
+        h1 { text-align: center; color: #333; }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1><i class="fas fa-clipboard-list"></i> Input Produksi Harian</h1>
-        <p>Update data dari line produksi | <span id="connectionStatus" class="status-connected"><i class="fas fa-sync-alt"></i> Connected to Google Sheets</span></p>
-    </div>
+    <h1>📋 Input Produksi Harian</h1>
+    
+    <form id="myForm">
+        <div class="form-group">
+            <label>Line Produksi *</label>
+            <select id="line" required>
+                <option value="">Pilih Line</option>
+                <option value="Line 1">Line 1</option>
+                <option value="Line 2">Line 2</option>
+                <option value="Line 3">Line 3</option>
+            </select>
+        </div>
 
-    <div class="form-card">
-        <form id="productionForm">
-            <!-- LINE PRODUKSI -->
-            <div class="form-group">
-                <label class="required">📋 Pilih Line Produksi</label>
-                <select id="line" required>
-                    <option value="">-- Pilih Line --</option>
-                    <option value="Line 1">Line 1</option>
-                    <option value="Line 2">Line 2</option>
-                    <option value="Line 3">Line 3</option>
-                    <option value="NF Workshop">NF Workshop</option>
-                    <option value="Liquid Workshop">Liquid Workshop</option>
-                    <option value="Packaging Line">Packaging Line</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label>Nama Produk *</label>
+            <input type="text" id="productName" required>
+        </div>
 
-            <!-- NAMA & BERAT PRODUK -->
-            <div class="row-2cols">
-                <div class="form-group">
-                    <label class="required">📦 Nama Produk</label>
-                    <input type="text" id="productName" placeholder="Contoh: ZPP-047" required>
-                    <div class="product-suggestions">
-                        <span class="suggestion-tag" data-product="ZPP-047">ZPP-047</span>
-                        <span class="suggestion-tag" data-product="ZPP-048">ZPP-048</span>
-                        <span class="suggestion-tag" data-product="ZPP-049">ZPP-049</span>
-                        <span class="suggestion-tag" data-product="Prototype Beta">Prototype Beta</span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="required">⚖️ Berat Produk (kg)</label>
-                    <input type="number" id="productWeight" step="0.01" placeholder="Contoh: 2.50" value="0" required>
-                    <div class="weight-suggestions">
-                        <span class="weight-tag" data-weight="0.50">0.50 kg</span>
-                        <span class="weight-tag" data-weight="1.00">1.00 kg</span>
-                        <span class="weight-tag" data-weight="2.00">2.00 kg</span>
-                        <span class="weight-tag" data-weight="2.50">2.50 kg</span>
-                        <span class="weight-tag" data-weight="5.00">5.00 kg</span>
-                        <span class="weight-tag" data-weight="10.00">10.00 kg</span>
-                    </div>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Berat Produk (kg) *</label>
+            <input type="number" id="productWeight" step="0.01" required>
+        </div>
 
-            <!-- TARGET & ACTUAL -->
-            <div class="row-2cols">
-                <div class="form-group">
-                    <label class="required">🎯 Target Produksi (unit)</label>
-                    <input type="number" id="target" placeholder="Contoh: 25000" required>
-                </div>
-                <div class="form-group">
-                    <label class="required">✅ Actual Produksi (unit)</label>
-                    <input type="number" id="actual" placeholder="Contoh: 23500" required>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Target Produksi *</label>
+            <input type="number" id="target" required>
+        </div>
 
-            <!-- REJECT & DOWNTIME -->
-            <div class="row-2cols">
-                <div class="form-group">
-                    <label>⚠️ Reject (%)</label>
-                    <input type="number" id="reject" step="0.1" placeholder="0-100" value="0">
-                    <div class="quick-buttons">
-                        <button type="button" class="quick-btn" data-val="1">1%</button>
-                        <button type="button" class="quick-btn" data-val="2">2%</button>
-                        <button type="button" class="quick-btn" data-val="3">3%</button>
-                        <button type="button" class="quick-btn" data-val="5">5%</button>
-                        <button type="button" class="quick-btn" data-val="10">10%</button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>⏸️ Downtime (%)</label>
-                    <input type="number" id="downtime" step="0.1" placeholder="0-100" value="0">
-                    <div class="quick-buttons">
-                        <button type="button" class="quick-btn" data-downtime="2">2%</button>
-                        <button type="button" class="quick-btn" data-downtime="5">5%</button>
-                        <button type="button" class="quick-btn" data-downtime="8">8%</button>
-                        <button type="button" class="quick-btn" data-downtime="12">12%</button>
-                    </div>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Actual Produksi *</label>
+            <input type="number" id="actual" required>
+        </div>
 
-            <!-- KONSUMSI ENERGI -->
-            <div class="row-3cols">
-                <div class="form-group"><label>💧 Air (m³)</label><input type="number" id="air" value="0"></div>
-                <div class="form-group"><label>⚡ Listrik (MWh)</label><input type="number" id="electric" value="0"></div>
-                <div class="form-group"><label>🔥 Steam (GJ)</label><input type="number" id="steam" value="0"></div>
-            </div>
+        <div class="form-group">
+            <label>Reject (%)</label>
+            <input type="number" id="reject" step="0.1" value="0">
+        </div>
 
-            <hr>
+        <div class="form-group">
+            <label>Downtime (%)</label>
+            <input type="number" id="downtime" step="0.1" value="0">
+        </div>
 
-            <!-- DESKRIPSI DEFECT -->
-            <div class="section-title"><i class="fas fa-bug" style="color:#dc2626"></i> DESKRIPSI DEFECT <span class="badge-info">Wajib jika reject > 0</span></div>
-            <div class="form-group">
-                <textarea id="defectDesc" placeholder="Contoh: Cacat surface goresan..."></textarea>
-                <div class="quick-buttons">
-                    <button type="button" class="quick-btn" data-defect="Cacat dimensi">📏 Cacat dimensi</button>
-                    <button type="button" class="quick-btn" data-defect="Cacat surface goresan">🔍 Cacat surface</button>
-                    <button type="button" class="quick-btn" data-defect="Material tidak sesuai spec">🧪 Material NG</button>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Deskripsi Defect (isi jika reject > 0)</label>
+            <textarea id="defectDesc" rows="2"></textarea>
+        </div>
 
-            <!-- DESKRIPSI BREAKDOWN -->
-            <div class="section-title"><i class="fas fa-tools" style="color:#f97316"></i> DESKRIPSI BREAKDOWN <span class="badge-info">Wajib jika downtime > 0</span></div>
-            <div class="form-group">
-                <textarea id="breakdownDesc" placeholder="Contoh: Mesin extruder overheat..."></textarea>
-                <div class="quick-buttons">
-                    <button type="button" class="quick-btn" data-breakdown="Extruder overheat">🔥 Extruder overheat</button>
-                    <button type="button" class="quick-btn" data-breakdown="Conveyor belt putus">⚙️ Conveyor rusak</button>
-                    <button type="button" class="quick-btn" data-breakdown="Kompresor mati">💨 Kompresor mati</button>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Deskripsi Breakdown (isi jika downtime > 0)</label>
+            <textarea id="breakdownDesc" rows="2"></textarea>
+        </div>
 
-            <!-- TINDAKAN PERBAIKAN -->
-            <div class="section-title"><i class="fas fa-hammer" style="color:#10b981"></i> TINDAKAN PERBAIKAN</div>
-            <div class="form-group">
-                <textarea id="correctiveAction" placeholder="Contoh: Ganti heater, kalibrasi..."></textarea>
-                <div class="quick-buttons">
-                    <button type="button" class="quick-btn" data-action="Ganti spare part">🔩 Ganti spare part</button>
-                    <button type="button" class="quick-btn" data-action="Kalibrasi ulang">📐 Kalibrasi</button>
-                    <button type="button" class="quick-btn" data-action="Maintenance rutin">🧹 Maintenance</button>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Operator</label>
+            <input type="text" id="operator">
+        </div>
 
-            <!-- OPERATOR -->
-            <div class="form-group">
-                <label>👤 Nama Operator</label>
-                <input type="text" id="operator" placeholder="Nama Anda">
-            </div>
+        <button type="submit">📤 KIRIM KE GOOGLE SHEETS</button>
+    </form>
 
-            <button type="submit" class="btn-submit" id="submitBtn">
-                <i class="fas fa-paper-plane"></i> Kirim ke Google Sheets
-            </button>
+    <div id="successMsg" class="success">✅ Data berhasil dikirim!</div>
+    <div id="errorMsg" class="error">❌ Gagal mengirim data</div>
 
-            <div id="successMsg" class="success-message">
-                <i class="fas fa-check-circle"></i> Data berhasil dikirim ke Google Sheets!
-            </div>
-            <div id="errorMsg" class="error-message">
-                <i class="fas fa-exclamation-triangle"></i> Gagal mengirim data.
-            </div>
-        </form>
-    </div>
+    <script>
+        // ========== GANTI URL INI ==========
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww17JnzMPwX58HcXDA_7neXPm77idHoONI5H_wJ565qMgF_OzSLHi9olQe5WFlLnYE/exec";
+        // ===================================
 
-    <div class="info-note">
-        <i class="fas fa-info-circle"></i> Data akan langsung tersimpan di Google Sheets dan muncul di Dashboard.
-    </div>
-</div>
+        const form = document.getElementById('myForm');
+        const successMsg = document.getElementById('successMsg');
+        const errorMsg = document.getElementById('errorMsg');
 
-<script>
-    // ============ GANTI DENGAN URL APPS SCRIPT ANDA ============
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVK72IJkvo4egDHqoEVLPhtmpx1ILqCjqm4gkA7y3Hq7jHOVuTPPWeC7sQJ8XJRW0A/exec";
-    // ============================================================
-
-    // Quick buttons
-    document.querySelectorAll('.quick-btn[data-val]').forEach(btn => {
-        btn.addEventListener('click', () => document.getElementById('reject').value = btn.dataset.val);
-    });
-    document.querySelectorAll('.quick-btn[data-downtime]').forEach(btn => {
-        btn.addEventListener('click', () => document.getElementById('downtime').value = btn.dataset.downtime);
-    });
-    document.querySelectorAll('.quick-btn[data-defect]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const ta = document.getElementById('defectDesc');
-            ta.value = ta.value ? ta.value + "\n• " + btn.dataset.defect : "• " + btn.dataset.defect;
-        });
-    });
-    document.querySelectorAll('.quick-btn[data-breakdown]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const ta = document.getElementById('breakdownDesc');
-            ta.value = ta.value ? ta.value + "\n• " + btn.dataset.breakdown : "• " + btn.dataset.breakdown;
-        });
-    });
-    document.querySelectorAll('.quick-btn[data-action]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const ta = document.getElementById('correctiveAction');
-            ta.value = ta.value ? ta.value + "\n• " + btn.dataset.action : "• " + btn.dataset.action;
-        });
-    });
-    document.querySelectorAll('.suggestion-tag').forEach(tag => {
-        tag.addEventListener('click', () => document.getElementById('productName').value = tag.dataset.product);
-    });
-    document.querySelectorAll('.weight-tag').forEach(tag => {
-        tag.addEventListener('click', () => document.getElementById('productWeight').value = tag.dataset.weight);
-    });
-
-    const form = document.getElementById('productionForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const successMsg = document.getElementById('successMsg');
-    const errorMsg = document.getElementById('errorMsg');
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const line = document.getElementById('line').value;
-        const productName = document.getElementById('productName').value.trim();
-        const productWeight = parseFloat(document.getElementById('productWeight').value) || 0;
-        const target = document.getElementById('target').value;
-        const actual = document.getElementById('actual').value;
-        const reject = parseFloat(document.getElementById('reject').value) || 0;
-        const downtime = parseFloat(document.getElementById('downtime').value) || 0;
-        
-        if (!line) { alert('Pilih Line Produksi'); return; }
-        if (!productName) { alert('Isi Nama Produk'); return; }
-        if (productWeight <= 0) { alert('Isi Berat Produk (minimal 0.01 kg)'); return; }
-        if (!target || target <= 0) { alert('Isi Target Produksi'); return; }
-        if (!actual || actual < 0) { alert('Isi Actual Produksi'); return; }
-        if (reject > 0 && !document.getElementById('defectDesc').value.trim()) {
-            alert('Reject > 0%, isi deskripsi defect!'); return;
-        }
-        if (downtime > 0 && !document.getElementById('breakdownDesc').value.trim()) {
-            alert('Downtime > 0%, isi deskripsi breakdown!'); return;
-        }
-
-        const now = new Date();
-        const achievement = ((parseInt(actual) / parseInt(target)) * 100).toFixed(1);
-
-        const data = {
-            timestamp: now.toISOString(),
-            date: now.toLocaleDateString('id-ID'),
-            time: now.toLocaleTimeString('id-ID'),
-            line: line,
-            productName: productName,
-            productWeight: productWeight.toFixed(2),
-            target: parseInt(target),
-            actual: parseInt(actual),
-            reject: reject,
-            downtime: downtime,
-            air: parseInt(document.getElementById('air').value) || 0,
-            electric: parseInt(document.getElementById('electric').value) || 0,
-            steam: parseInt(document.getElementById('steam').value) || 0,
-            defectDesc: document.getElementById('defectDesc').value || "-",
-            breakdownDesc: document.getElementById('breakdownDesc').value || "-",
-            correctiveAction: document.getElementById('correctiveAction').value || "-",
-            operator: document.getElementById('operator').value || 'Unknown',
-            achievement: achievement
-        };
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Mengirim ke Google Sheets...';
-
-        try {
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            successMsg.style.display = 'block';
-            errorMsg.style.display = 'none';
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            form.reset();
-            document.getElementById('reject').value = '0';
-            document.getElementById('downtime').value = '0';
-            document.getElementById('productWeight').value = '0';
-            
-            setTimeout(() => successMsg.style.display = 'none', 3000);
-        } catch (error) {
-            errorMsg.style.display = 'block';
-            setTimeout(() => errorMsg.style.display = 'none', 3000);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim ke Google Sheets';
-        }
-    });
-</script>
+            const now = new Date();
+            const target = parseInt(document.getElementById('target').value);
+            const actual = parseInt(document.getElementById('actual').value);
+            const achievement = ((actual / target) * 100).toFixed(1);
+
+            const data = {
+                timestamp: now.toISOString(),
+                date: now.toLocaleDateString('id-ID'),
+                time: now.toLocaleTimeString('id-ID'),
+                line: document.getElementById('line').value,
+                productName: document.getElementById('productName').value,
+                productWeight: parseFloat(document.getElementById('productWeight').value).toFixed(2),
+                target: target,
+                actual: actual,
+                reject: parseFloat(document.getElementById('reject').value) || 0,
+                downtime: parseFloat(document.getElementById('downtime').value) || 0,
+                air: 0,
+                electric: 0,
+                steam: 0,
+                defectDesc: document.getElementById('defectDesc').value || "-",
+                breakdownDesc: document.getElementById('breakdownDesc').value || "-",
+                correctiveAction: "-",
+                operator: document.getElementById('operator').value || "-",
+                achievement: achievement
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                successMsg.style.display = 'block';
+                errorMsg.style.display = 'none';
+                form.reset();
+                setTimeout(() => successMsg.style.display = 'none', 3000);
+                
+            } catch(error) {
+                errorMsg.style.display = 'block';
+                setTimeout(() => errorMsg.style.display = 'none', 3000);
+            }
+        });
+    </script>
 </body>
 </html>
