@@ -36,13 +36,15 @@
         .suggestion-tag, .weight-tag { background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
         .suggestion-tag:hover, .weight-tag:hover { background: #dbeafe; }
         .form-note { font-size: 0.7rem; color: #6c86a3; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+        .status-connected { background: #10b981; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
+        .status-disconnected { background: #ef4444; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; display: inline-block; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <h1><i class="fas fa-clipboard-list"></i> Input Produksi Harian</h1>
-        <p>Update data dari line produksi | Connected to Google Sheets</p>
+        <p>Update data dari line produksi | <span id="connectionStatus" class="status-connected"><i class="fas fa-sync-alt"></i> Connected to Google Sheets</span></p>
     </div>
 
     <div class="form-card">
@@ -57,6 +59,7 @@
                     <option value="Line 3">Line 3</option>
                     <option value="NF Workshop">NF Workshop</option>
                     <option value="Liquid Workshop">Liquid Workshop</option>
+                    <option value="Packaging Line">Packaging Line</option>
                 </select>
             </div>
 
@@ -190,66 +193,40 @@
 </div>
 
 <script>
-    // ============ GANTI URL INI DENGAN APPS SCRIPT ANDA ============
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIOEdPaZAFBNtEWchyy2q1MHjLi8LXnb5v_QHWDte1zA6efUuvgB_9-9kJRINepJCS/exec";
-    // ================================================================
+    // ============ GANTI DENGAN URL APPS SCRIPT ANDA ============
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlOvQZePFR96JJDzZ9kpllp65RtQPL5ktjZPBCpeBVDmbqfKa7M0IAKRfMKQh-XecT/exec";
+    // ============================================================
 
-    // Quick buttons untuk reject
+    // Quick buttons
     document.querySelectorAll('.quick-btn[data-val]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('reject').value = btn.dataset.val;
-        });
+        btn.addEventListener('click', () => document.getElementById('reject').value = btn.dataset.val);
     });
-
-    // Quick buttons untuk downtime
     document.querySelectorAll('.quick-btn[data-downtime]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('downtime').value = btn.dataset.downtime;
-        });
+        btn.addEventListener('click', () => document.getElementById('downtime').value = btn.dataset.downtime);
     });
-
-    // Quick buttons untuk defect
     document.querySelectorAll('.quick-btn[data-defect]').forEach(btn => {
         btn.addEventListener('click', () => {
             const ta = document.getElementById('defectDesc');
-            const current = ta.value;
-            const newText = current ? current + "\n• " + btn.dataset.defect : "• " + btn.dataset.defect;
-            ta.value = newText;
+            ta.value = ta.value ? ta.value + "\n• " + btn.dataset.defect : "• " + btn.dataset.defect;
         });
     });
-
-    // Quick buttons untuk breakdown
     document.querySelectorAll('.quick-btn[data-breakdown]').forEach(btn => {
         btn.addEventListener('click', () => {
             const ta = document.getElementById('breakdownDesc');
-            const current = ta.value;
-            const newText = current ? current + "\n• " + btn.dataset.breakdown : "• " + btn.dataset.breakdown;
-            ta.value = newText;
+            ta.value = ta.value ? ta.value + "\n• " + btn.dataset.breakdown : "• " + btn.dataset.breakdown;
         });
     });
-
-    // Quick buttons untuk corrective action
     document.querySelectorAll('.quick-btn[data-action]').forEach(btn => {
         btn.addEventListener('click', () => {
             const ta = document.getElementById('correctiveAction');
-            const current = ta.value;
-            const newText = current ? current + "\n• " + btn.dataset.action : "• " + btn.dataset.action;
-            ta.value = newText;
+            ta.value = ta.value ? ta.value + "\n• " + btn.dataset.action : "• " + btn.dataset.action;
         });
     });
-
-    // Product suggestion tags
     document.querySelectorAll('.suggestion-tag').forEach(tag => {
-        tag.addEventListener('click', () => {
-            document.getElementById('productName').value = tag.dataset.product;
-        });
+        tag.addEventListener('click', () => document.getElementById('productName').value = tag.dataset.product);
     });
-
-    // Weight suggestion tags
     document.querySelectorAll('.weight-tag').forEach(tag => {
-        tag.addEventListener('click', () => {
-            document.getElementById('productWeight').value = tag.dataset.weight;
-        });
+        tag.addEventListener('click', () => document.getElementById('productWeight').value = tag.dataset.weight);
     });
 
     const form = document.getElementById('productionForm');
@@ -268,19 +245,16 @@
         const reject = parseFloat(document.getElementById('reject').value) || 0;
         const downtime = parseFloat(document.getElementById('downtime').value) || 0;
         
-        // Validasi
-        if (!line) { alert('Harap pilih Line Produksi'); return; }
-        if (!productName) { alert('Harap isi Nama Produk'); return; }
-        if (productWeight <= 0) { alert('Harap isi Berat Produk (minimal 0.01 kg)'); return; }
-        if (!target || target <= 0) { alert('Harap isi Target Produksi yang valid'); return; }
-        if (!actual || actual < 0) { alert('Harap isi Actual Produksi yang valid'); return; }
+        if (!line) { alert('Pilih Line Produksi'); return; }
+        if (!productName) { alert('Isi Nama Produk'); return; }
+        if (productWeight <= 0) { alert('Isi Berat Produk (minimal 0.01 kg)'); return; }
+        if (!target || target <= 0) { alert('Isi Target Produksi'); return; }
+        if (!actual || actual < 0) { alert('Isi Actual Produksi'); return; }
         if (reject > 0 && !document.getElementById('defectDesc').value.trim()) {
-            alert('⚠️ Reject rate > 0%, harap isi deskripsi defect!');
-            return;
+            alert('Reject > 0%, isi deskripsi defect!'); return;
         }
         if (downtime > 0 && !document.getElementById('breakdownDesc').value.trim()) {
-            alert('⚠️ Downtime > 0%, harap isi deskripsi breakdown!');
-            return;
+            alert('Downtime > 0%, isi deskripsi breakdown!'); return;
         }
 
         const now = new Date();
@@ -308,10 +282,10 @@
         };
 
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Mengirim...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Mengirim ke Google Sheets...';
 
         try {
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
+            await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
@@ -325,16 +299,11 @@
             document.getElementById('reject').value = '0';
             document.getElementById('downtime').value = '0';
             document.getElementById('productWeight').value = '0';
-            document.getElementById('defectDesc').value = '';
-            document.getElementById('breakdownDesc').value = '';
-            document.getElementById('correctiveAction').value = '';
             
-            setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
-            
+            setTimeout(() => successMsg.style.display = 'none', 3000);
         } catch (error) {
-            console.error('Error:', error);
             errorMsg.style.display = 'block';
-            setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
+            setTimeout(() => errorMsg.style.display = 'none', 3000);
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim ke Google Sheets';
